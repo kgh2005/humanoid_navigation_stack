@@ -1,0 +1,42 @@
+path_planning:
+  ros__parameters:
+    frame_id: map
+    replan_hz: 10.0
+    zero_pose_is_invalid: true
+
+    search:
+      critical_cost_multiplier: 10.0
+      path_resolution: 0.10
+
+    obstacle:
+      robot_radius: 0.20
+      opponent_radius_fallback: 0.075
+      margin: 0.10
+      near_distance: 1.0
+      near_extra_margin: 0.20
+      merge_gap: 0.02
+      polygon_vertices: 12
+
+    ball:
+      radius: 0.05
+      avoid: false
+
+    goal_obstacle:
+      enabled: true
+      field_length: 9.0
+      goal_width: 2.6
+      goal_depth: 0.6
+      wall_width: 0.10
+      back_extension: 0.50
+
+    display:
+      show_visibility_graph: false
+
+    topics:
+      robot: /task_planner/pose_marker
+      target: /task_planner/target_marker
+      obstacles: /task_planner/obstacle_marker
+      ball: /task_planner/ball_marker
+      ball_obstacle_active: ball_obstacle_active
+      path: /vg/path
+      markers: /vg/markers
