@@ -23,6 +23,15 @@ class TopicParameters:
 
 
 @dataclass(frozen=True)
+class FieldParameters:
+    """Dimensions of the visualized soccer field."""
+
+    length: float
+    width: float
+    line_width: float
+
+
+@dataclass(frozen=True)
 class ObstacleParameters:
     """Parameters controlling robot obstacle inflation."""
 
@@ -52,6 +61,7 @@ class GoalObstacleParameters:
     goal_width: float
     goal_depth: float
     wall_width: float
+    goal_line_offset: float
     back_extension: float
 
 
@@ -65,52 +75,34 @@ class PlanningParameters:
     critical_cost_multiplier: float
     path_resolution: float
     show_visibility_graph: bool
+    field: FieldParameters
     topics: TopicParameters
     obstacle: ObstacleParameters
     ball: BallParameters
     goal_obstacle: GoalObstacleParameters
 
 
-_DEFAULTS: dict[str, Any] = {
-    'frame_id': 'map',
-    'replan_hz': 10.0,
-    'zero_pose_is_invalid': True,
-    'search.critical_cost_multiplier': 10.0,
-    'search.path_resolution': 0.10,
-    'display.show_visibility_graph': False,
-    'topics.robot': '/task_planner/pose_marker',
-    'topics.target': '/task_planner/target_marker',
-    'topics.obstacles': '/task_planner/obstacle_marker',
-    'topics.ball': '/task_planner/ball_marker',
-    'topics.ball_obstacle_active': 'ball_obstacle_active',
-    'topics.path': '/vg/path',
-    'topics.markers': '/vg/markers',
-    'obstacle.robot_radius': 0.20,
-    'obstacle.opponent_radius_fallback': 0.075,
-    'obstacle.margin': 0.10,
-    'obstacle.near_distance': 1.0,
-    'obstacle.near_extra_margin': 0.20,
-    'obstacle.merge_gap': 0.02,
-    'obstacle.polygon_vertices': 12,
-    'ball.radius': 0.05,
-    'ball.avoid': False,
-    'goal_obstacle.enabled': True,
-    'goal_obstacle.field_length': 9.0,
-    'goal_obstacle.goal_width': 2.6,
-    'goal_obstacle.goal_depth': 0.6,
-    'goal_obstacle.wall_width': 0.10,
-    'goal_obstacle.back_extension': 0.50,
-}
-
-
 def load_parameters(node: 'Node') -> PlanningParameters:
-    """Declare, read, validate, and return all planner parameters."""
-    for name, default in _DEFAULTS.items():
-        node.declare_parameter(name, default)
+    """Declare, require, validate, and return all planner parameters."""
+    from rcl_interfaces.msg import ParameterDescriptor
+    from rclpy.parameter import Parameter
 
     def value(name: str) -> Any:
-        return node.get_parameter(name).value
+        parameter = node.declare_parameter(
+            name,
+            descriptor=ParameterDescriptor(dynamic_typing=True),
+        )
+        if parameter.type_ == Parameter.Type.NOT_SET:
+            raise ValueError(
+                f'required ROS parameter {name!r} is missing'
+            )
+        return parameter.value
 
+    field = FieldParameters(
+        length=float(value('field.length')),
+        width=float(value('field.width')),
+        line_width=float(value('field.line_width')),
+    )
     parameters = PlanningParameters(
         frame_id=str(value('frame_id')),
         replan_hz=float(value('replan_hz')),
@@ -122,6 +114,7 @@ def load_parameters(node: 'Node') -> PlanningParameters:
         show_visibility_graph=bool(
             value('display.show_visibility_graph')
         ),
+        field=field,
         topics=TopicParameters(
             robot=str(value('topics.robot')),
             target=str(value('topics.target')),
@@ -152,10 +145,13 @@ def load_parameters(node: 'Node') -> PlanningParameters:
         ),
         goal_obstacle=GoalObstacleParameters(
             enabled=bool(value('goal_obstacle.enabled')),
-            field_length=float(value('goal_obstacle.field_length')),
+            field_length=field.length,
             goal_width=float(value('goal_obstacle.goal_width')),
             goal_depth=float(value('goal_obstacle.goal_depth')),
             wall_width=float(value('goal_obstacle.wall_width')),
+            goal_line_offset=float(
+                value('goal_obstacle.goal_line_offset')
+            ),
             back_extension=float(
                 value('goal_obstacle.back_extension')
             ),
@@ -175,6 +171,17 @@ def _validate(parameters: PlanningParameters) -> None:
         raise ValueError('critical_cost_multiplier must be at least 1')
     if parameters.path_resolution <= 0.0:
         raise ValueError('path_resolution must be positive')
+    if any(
+        number <= 0.0
+        for number in (
+            parameters.field.length,
+            parameters.field.width,
+            parameters.field.line_width,
+        )
+    ):
+        raise ValueError('field dimensions and line width must be positive')
+    if parameters.goal_obstacle.field_length != parameters.field.length:
+        raise ValueError('goal obstacle must use the configured field length')
 
     obstacle_values = (
         parameters.obstacle.robot_radius,
@@ -190,9 +197,10 @@ def _validate(parameters: PlanningParameters) -> None:
         raise ValueError('obstacle.polygon_vertices must be at least 4')
     if parameters.ball.radius < 0.0:
         raise ValueError('ball.radius must be non-negative')
+    if parameters.goal_obstacle.goal_line_offset < 0.0:
+        raise ValueError('goal_line_offset must be non-negative')
 
     goal_values = (
-        parameters.goal_obstacle.field_length,
         parameters.goal_obstacle.goal_width,
         parameters.goal_obstacle.goal_depth,
         parameters.goal_obstacle.wall_width,

@@ -121,7 +121,7 @@ def _goal_polygon(
     clearance: float,
 ) -> Polygon:
     """Return one inflated U-shaped goal polygon."""
-    goal_line = goal.field_length / 2.0
+    goal_line = goal.field_length / 2.0 + goal.goal_line_offset
     front = goal_line - clearance
     back_inner = goal_line + goal.goal_depth
     back_outer = (

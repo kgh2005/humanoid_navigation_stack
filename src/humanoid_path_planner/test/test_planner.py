@@ -1,18 +1,24 @@
 """End-to-end tests for the ROS-independent Planner API."""
 
+from dataclasses import replace
+
 from humanoid_path_planner.core.obstacle import RoundObstacle
 from humanoid_path_planner.core.planner import Planner
 from humanoid_path_planner.parameters import (
+    _validate,
     BallParameters,
+    FieldParameters,
     GoalObstacleParameters,
     ObstacleParameters,
     PlanningParameters,
     TopicParameters,
 )
+import pytest
 
 
 def planner_parameters() -> PlanningParameters:
     """Return a planner configuration without static field goals."""
+    field = FieldParameters(length=9.0, width=6.0, line_width=0.05)
     return PlanningParameters(
         frame_id='map',
         replan_hz=10.0,
@@ -20,6 +26,7 @@ def planner_parameters() -> PlanningParameters:
         critical_cost_multiplier=10.0,
         path_resolution=0.1,
         show_visibility_graph=False,
+        field=field,
         topics=TopicParameters(
             robot='robot',
             target='target',
@@ -41,10 +48,11 @@ def planner_parameters() -> PlanningParameters:
         ball=BallParameters(radius=0.05, avoid=False),
         goal_obstacle=GoalObstacleParameters(
             enabled=False,
-            field_length=9.0,
+            field_length=field.length,
             goal_width=2.6,
             goal_depth=0.6,
             wall_width=0.1,
+            goal_line_offset=0.30,
             back_extension=0.5,
         ),
     )
@@ -62,6 +70,21 @@ def test_planner_densifies_direct_path():
     assert result.path[0] == (0.0, 0.0)
     assert result.path[-1] == (1.0, 0.0)
     assert len(result.path) == 11
+
+
+def test_negative_goal_line_offset_is_rejected():
+    """Goal locations must not move inward through a negative offset."""
+    parameters = planner_parameters()
+    invalid = replace(
+        parameters,
+        goal_obstacle=replace(
+            parameters.goal_obstacle,
+            goal_line_offset=-0.01,
+        ),
+    )
+
+    with pytest.raises(ValueError, match='goal_line_offset'):
+        _validate(invalid)
 
 
 def test_planner_avoids_round_opponent():

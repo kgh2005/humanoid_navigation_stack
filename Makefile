@@ -11,14 +11,17 @@ PATH_PLANNING_PACKAGES := field_coordinate_adapter humanoid_path_planner
 COLCON_BUILD_ARGS ?= --symlink-install
 ARGS ?=
 
-.PHONY: help build-path-planning test-path-planning start-path-planning
+.PHONY: help build-path-planning test-path-planning start-path-planning \
+	debug-path-planning
 
 help:
 	@printf '%s\n' \
 		'make build-path-planning  - adapter와 path planner 빌드' \
 		'make test-path-planning   - adapter와 path planner 테스트' \
 		'make start-path-planning  - adapter와 path planner 실행' \
-		'make start-path-planning ARGS="..." - launch 인자 전달'
+		'make start-path-planning ARGS="..." - launch 인자 전달' \
+		'make debug-path-planning - adapter, path planner, RViz 실행' \
+		'make debug-path-planning ARGS="..." - launch 인자 전달'
 
 build-path-planning:
 	test -f "$(ROS_SETUP)"
@@ -36,3 +39,6 @@ test-path-planning:
 
 start-path-planning:
 	bash "$(REPOSITORY_DIR)/scripts/start_path_planning.sh" $(ARGS)
+
+debug-path-planning:
+	bash "$(REPOSITORY_DIR)/scripts/debug_path_planning.sh" $(ARGS)

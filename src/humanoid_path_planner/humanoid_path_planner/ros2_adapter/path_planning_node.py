@@ -14,7 +14,10 @@ from visualization_msgs.msg import Marker, MarkerArray
 
 from ..core.obstacle import Point, RoundObstacle
 from ..core.planner import Planner, PlanResult
-from ..parameters import load_parameters
+from ..parameters import FieldParameters, load_parameters
+
+_FIELD_BOUNDARY_MARKER_ID = 1000
+_FIELD_BOUNDARY_Z = 0.01
 
 
 class PathPlanningNode(Node):
@@ -207,6 +210,13 @@ class PathPlanningNode(Node):
         clear = Marker()
         clear.action = Marker.DELETEALL
         markers.markers.append(clear)
+        markers.markers.append(
+            _field_boundary_marker(
+                self.config.frame_id,
+                self.config.field,
+                now,
+            )
+        )
         if result is None:
             self._marker_publisher.publish(markers)
             return
@@ -264,12 +274,48 @@ def _marker_point(marker: Marker) -> Point:
     )
 
 
-def _geometry_point(point: Point) -> GeometryPoint:
+def _geometry_point(point: Point, *, z: float = 0.0) -> GeometryPoint:
     """Convert an XY tuple to a geometry message point."""
     message = GeometryPoint()
     message.x = point[0]
     message.y = point[1]
+    message.z = z
     return message
+
+
+def _field_boundary_marker(
+    frame_id: str,
+    field: FieldParameters,
+    stamp,
+) -> Marker:
+    """Create the centered visual-only soccer field boundary marker."""
+    half_length = field.length / 2.0
+    half_width = field.width / 2.0
+    corners = (
+        (-half_length, -half_width),
+        (half_length, -half_width),
+        (half_length, half_width),
+        (-half_length, half_width),
+        (-half_length, -half_width),
+    )
+    marker = Marker()
+    marker.header.frame_id = frame_id
+    marker.header.stamp = stamp
+    marker.ns = 'field_boundary'
+    marker.id = _FIELD_BOUNDARY_MARKER_ID
+    marker.type = Marker.LINE_STRIP
+    marker.action = Marker.ADD
+    marker.pose.orientation.w = 1.0
+    marker.scale.x = field.line_width
+    marker.color.r = 1.0
+    marker.color.g = 1.0
+    marker.color.b = 1.0
+    marker.color.a = 1.0
+    marker.points = [
+        _geometry_point(point, z=_FIELD_BOUNDARY_Z)
+        for point in corners
+    ]
+    return marker
 
 
 def main(args=None) -> None:
