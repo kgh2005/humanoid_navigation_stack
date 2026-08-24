@@ -37,12 +37,6 @@ def shortest_path(
     critical_cost_multiplier: float,
 ) -> VisibilityPath | None:
     """Find a best-effort shortest path through obstacle geometry."""
-    if any(
-        point_in_polygon(goal, polygon, include_boundary=True)
-        for polygon in geometry.critical
-    ):
-        return None
-
     nodes = [_Node(start), _Node(goal)]
     for polygon_id, polygon in enumerate(geometry.margin):
         nodes.extend(
@@ -90,6 +84,7 @@ def _edge_multiplier(
     """Return an edge cost multiplier, or ``None`` when blocked."""
     first = nodes[first_index]
     second = nodes[second_index]
+    direct_fallback = {first_index, second_index} == {0, 1}
     adjacent = _adjacent_vertices(first, second, geometry.margin)
     if (
         first.polygon_id >= 0
@@ -112,7 +107,7 @@ def _edge_multiplier(
             second_index,
             nodes,
             polygon,
-        ):
+        ) and not direct_fallback:
             return None
 
     multiplier = 1.0
@@ -124,13 +119,6 @@ def _edge_multiplier(
             allow_boundary_edge=adjacent,
         ):
             continue
-        if not _special_endpoint_inside(
-            first_index,
-            second_index,
-            nodes,
-            polygon,
-        ):
-            return None
         multiplier = critical_cost_multiplier
     return multiplier
 
@@ -141,7 +129,7 @@ def _special_endpoint_inside(
     nodes: Sequence[_Node],
     polygon: Polygon,
 ) -> bool:
-    """Allow start or goal to leave a polygon that already contains it."""
+    """Allow start to leave or goal to enter a containing polygon."""
     return (
         first_index in (0, 1)
         and point_in_polygon(

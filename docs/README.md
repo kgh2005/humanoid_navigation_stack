@@ -19,11 +19,23 @@ make build-path-planning
 make start-path-planning
 ~~~
 
+Start the adapter, planner, and RViz together for debugging:
+
+~~~bash
+make debug-path-planning
+~~~
+
 Direct launch:
 
 ~~~bash
 source ~/colcon_ws/install/setup.bash
 ros2 launch humanoid_path_planner path_planning_with_adapter.launch.py
+~~~
+
+Direct debug launch:
+
+~~~bash
+ros2 launch humanoid_path_planner path_planning_debug.launch.py
 ~~~
 
 ## Test

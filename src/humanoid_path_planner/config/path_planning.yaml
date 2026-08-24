@@ -24,7 +24,7 @@ path_planning:
 
     ball:
       radius: 0.05                    # 공의 장애물 반지름 (m)
-      avoid: false                    # 시작 시 공을 장애물로 회피할지 여부
+      avoid: true                     # 시작 시 공을 장애물로 회피할지 여부
 
     goal_obstacle:
       enabled: true                   # 골대 구조물을 고정 장애물로 사용할지 여부

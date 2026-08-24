@@ -41,6 +41,7 @@ Robot yaw comes from ImuMsg.yaw. Target yaw comes from Master2localization.angle
 
 - Keep zero_pose_is_invalid set to false because the field center is (0, 0).
 - Adapter field dimensions define the converted coordinate range.
-- Planner field_length defines the goal positions.
+- Planner `field.length` is the single field-length value used for the RViz boundary and goal-line positions.
+- Goal obstacles are centered at `±(field.length / 2 + goal_obstacle.goal_line_offset)` on the X axis.
 
 See the [adapter configuration](../src/field_coordinate_adapter/config/field_coordinate_adapter.yaml) and [planner configuration](../src/humanoid_path_planner/config/path_planning.yaml).

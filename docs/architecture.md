@@ -41,12 +41,21 @@ Consumes the converted Markers and generates a visibility-graph path at up to 10
 
 ## Obstacles
 
-Opponent robots and the ball are inflated by the robot radius and safety margin. Each goal is modeled as a static U-shaped obstacle.
+Opponent robots passed to the planner core are inflated by the robot radius and safety margin. The ball is included only while avoidance is active, initially configured by `ball.avoid` and updated at runtime through `/ball_obstacle_active`. Each enabled goal is modeled as a static U-shaped obstacle.
+
+The planner maintains two obstacle layers:
+
+- `critical`: the physical obstacle inflated by the robot radius
+- `margin`: the critical area plus the configured safety margin
+
+Normal visibility-graph edges that cross a margin are blocked. If the start or goal is already inside an obstacle, edges that let the path leave or enter that obstacle remain available. An allowed edge crossing a critical area uses `search.critical_cost_multiplier` as its cost multiplier. The direct start-to-goal edge is retained as a best-effort fallback candidate, allowing the planner to return a path when no collision-free detour exists.
 
 ~~~text
-goal_x = ±goal_obstacle.field_length / 2
+goal_x = ±(field.length / 2 + goal_obstacle.goal_line_offset)
 ~~~
 
 ## Launch
 
 [path_planning_with_adapter.launch.py](../src/humanoid_path_planner/launch/path_planning_with_adapter.launch.py) starts the adapter and planner together. The path follower is not included yet.
+
+[path_planning_debug.launch.py](../src/humanoid_path_planner/launch/path_planning_debug.launch.py) additionally starts RViz with the installed planner configuration.
