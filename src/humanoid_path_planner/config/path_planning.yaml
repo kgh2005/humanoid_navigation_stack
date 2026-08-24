@@ -27,7 +27,7 @@ path_planning:
       goal_width: 1.3                 # 골대 입구 너비 (m)
       goal_depth: 0.6                 # 골대 깊이 (m)
       wall_width: 0.05                # 골대 벽 두께 (m)
-      back_extension: 0.01            # 골대 뒤쪽 장애물 확장 거리 (m)
+      back_extension: 0.0           # 골대 뒤쪽 장애물 확장 거리 (m)
 
     display:
       show_visibility_graph: false    # RViz에 visibility graph를 표시할지 여부

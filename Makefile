@@ -1,5 +1,5 @@
 SHELL := /bin/bash
-.SHELLFLAGS := -eu -o pipefail -c
+.SHELLFLAGS := -e -o pipefail -c
 .ONESHELL:
 .DEFAULT_GOAL := help
 
