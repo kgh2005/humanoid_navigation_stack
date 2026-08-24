@@ -6,7 +6,7 @@ from dataclasses import dataclass
 import math
 from typing import Sequence
 
-from .parameters import GoalObstacleParameters, ObstacleParameters
+from ..parameters import GoalObstacleParameters, ObstacleParameters
 
 Point = tuple[float, float]
 Polygon = tuple[Point, ...]

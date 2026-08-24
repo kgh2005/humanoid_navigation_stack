@@ -1,7 +1,7 @@
 """Tests for visibility edges and Euclidean A* behavior."""
 
-from humanoid_path_planner.obstacle import ObstacleGeometry
-from humanoid_path_planner.visibility_graph import shortest_path
+from humanoid_path_planner.core.obstacle import ObstacleGeometry
+from humanoid_path_planner.core.visibility_graph import shortest_path
 
 
 def test_direct_path_without_obstacles():

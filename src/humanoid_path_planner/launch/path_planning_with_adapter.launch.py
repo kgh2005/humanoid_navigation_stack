@@ -10,7 +10,6 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description() -> LaunchDescription:
     """Include the adapter and planner launch files."""
-
     adapter_launch = GroupAction(
         scoped=True,
         actions=[

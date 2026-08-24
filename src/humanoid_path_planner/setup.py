@@ -30,7 +30,7 @@ setup(
     entry_points={
         'console_scripts': [
             'path_planning = '
-            'humanoid_path_planner.path_planning:main',
+            'humanoid_path_planner.ros2_adapter.path_planning_node:main',
         ],
     },
 )

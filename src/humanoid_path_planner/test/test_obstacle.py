@@ -2,16 +2,16 @@
 
 import math
 
-from humanoid_path_planner.obstacle import (
+from humanoid_path_planner.core.obstacle import (
     make_goal_obstacles,
     ObstacleMap,
     RoundObstacle,
 )
+from humanoid_path_planner.core.visibility_graph import point_in_polygon
 from humanoid_path_planner.parameters import (
     GoalObstacleParameters,
     ObstacleParameters,
 )
-from humanoid_path_planner.visibility_graph import point_in_polygon
 
 
 def obstacle_parameters() -> ObstacleParameters:

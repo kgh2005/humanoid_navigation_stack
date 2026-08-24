@@ -13,8 +13,8 @@ from .obstacle import (
     Point,
     RoundObstacle,
 )
-from .parameters import PlanningParameters
 from .visibility_graph import shortest_path
+from ..parameters import PlanningParameters
 
 
 @dataclass(frozen=True)

@@ -1,6 +1,7 @@
 """End-to-end tests for the ROS-independent Planner API."""
 
-from humanoid_path_planner.obstacle import RoundObstacle
+from humanoid_path_planner.core.obstacle import RoundObstacle
+from humanoid_path_planner.core.planner import Planner
 from humanoid_path_planner.parameters import (
     BallParameters,
     GoalObstacleParameters,
@@ -8,7 +9,6 @@ from humanoid_path_planner.parameters import (
     PlanningParameters,
     TopicParameters,
 )
-from humanoid_path_planner.planner import Planner
 
 
 def planner_parameters() -> PlanningParameters:

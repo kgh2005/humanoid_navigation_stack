@@ -1,4 +1,4 @@
-"""Visibility graph construction and Euclidean A* search."""
+"""ROS-independent visibility graph construction and A* search."""
 
 from __future__ import annotations
 
