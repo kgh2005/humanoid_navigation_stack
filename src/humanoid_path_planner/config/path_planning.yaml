@@ -9,8 +9,8 @@ path_planning:
       path_resolution: 0.10          # 출력 경로점 사이의 간격 (m)
 
     field:
-      length: 9.0                    # 경기장 X축 전체 길이 (m)
-      width: 6.0                     # 경기장 Y축 전체 너비 (m)
+      length: 10.0                    # 경기장 X축 전체 길이 (m)
+      width: 7.0                     # 경기장 Y축 전체 너비 (m)
       line_width: 0.05               # RViz 외곽선 두께 (m)
 
     obstacle:
