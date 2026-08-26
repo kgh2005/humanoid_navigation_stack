@@ -110,7 +110,7 @@ class FieldCoordinateAdapterNode(Node):
         robot_x = float(localization.robot_x)
         robot_y = float(localization.robot_y)
 
-        if robot_x == 0.0 and robot_y == 0.0:
+        if self._invalid_pixel_position(robot_x, robot_y):
             marker.action = Marker.DELETE
             self._robot_pub.publish(marker)
             return
@@ -147,7 +147,7 @@ class FieldCoordinateAdapterNode(Node):
         ball_x = float(localization.ball_x)
         ball_y = float(localization.ball_y)
 
-        if ball_x == 0.0 and ball_y == 0.0:
+        if self._invalid_pixel_position(ball_x, ball_y):
             marker.action = Marker.DELETE
             self._ball_pub.publish(marker)
             return
@@ -178,7 +178,7 @@ class FieldCoordinateAdapterNode(Node):
             localization.obstacles_x,
             localization.obstacles_y,
         )):
-            if pixel_x == 0.0 and pixel_y == 0.0:
+            if self._invalid_pixel_position(pixel_x, pixel_y):
                 continue
 
             x, y = self._converter.to_field(float(pixel_x), float(pixel_y))
@@ -204,17 +204,21 @@ class FieldCoordinateAdapterNode(Node):
         """Publish the converted target marker."""
         marker = self._new_marker(stamp, 'target', 0)
 
-        if (
-            target is None
-            or (target.targetx == 0 and target.targety == 0)
-        ):
+        if target is None:
+            marker.action = Marker.DELETE
+            self._target_pub.publish(marker)
+            return
+
+        target_x = float(target.targetx)
+        target_y = float(target.targety)
+        if self._invalid_pixel_position(target_x, target_y):
             marker.action = Marker.DELETE
             self._target_pub.publish(marker)
             return
 
         x, y = self._converter.to_field(
-            float(target.targetx),
-            float(target.targety),
+            target_x,
+            target_y,
         )
         quaternion = self._converter.yaw_to_quaternion(
             float(target.angle_to_target)
@@ -240,6 +244,14 @@ class FieldCoordinateAdapterNode(Node):
         marker.color.b = 0.2
         marker.color.a = 1.0
         self._target_pub.publish(marker)
+
+    def _invalid_pixel_position(self, x: float, y: float) -> bool:
+        """Apply the configured zero-pixel policy to every position."""
+        return (
+            self.parameters.zero_pixel_is_invalid
+            and x == 0.0
+            and y == 0.0
+        )
 
     def _new_marker(self, stamp, namespace: str, marker_id: int) -> Marker:
         """Create a marker with the common header and identity orientation."""

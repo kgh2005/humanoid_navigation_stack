@@ -2,7 +2,7 @@ path_planning:
   ros__parameters:
     frame_id: map                    # 경로와 마커에 사용할 기준 좌표계
     replan_hz: 10.0                  # 경로 재계산 주기 (Hz)
-    zero_pose_is_invalid: false      # (0, 0) 좌표를 유효하지 않은 pose로 처리할지 여부
+    zero_position_is_invalid: false  # 모든 입력의 (0, 0) 위치를 유효하지 않게 처리할지 여부
 
     search:
       critical_cost_multiplier: 10.0 # 위험 영역을 지나는 경로의 비용 배수

@@ -93,7 +93,7 @@ class PathPlanningNode(Node):
             self._robot = None
         else:
             point = _marker_point(message)
-            self._robot = None if self._invalid_pose(point) else point
+            self._robot = None if self._invalid_position(point) else point
         self._dirty = True
 
     def _on_target(self, message: Marker) -> None:
@@ -103,7 +103,7 @@ class PathPlanningNode(Node):
             self._target_marker = None
         else:
             point = _marker_point(message)
-            if self._invalid_pose(point):
+            if self._invalid_position(point):
                 self._target = None
                 self._target_marker = None
             else:
@@ -118,7 +118,7 @@ class PathPlanningNode(Node):
             if marker.action not in (Marker.ADD, Marker.MODIFY):
                 continue
             point = _marker_point(marker)
-            if point == (0.0, 0.0):
+            if self._invalid_position(point):
                 continue
             diameter = max(float(marker.scale.x), float(marker.scale.y))
             radius = (
@@ -135,7 +135,7 @@ class PathPlanningNode(Node):
         point = _marker_point(message)
         if (
             message.action in (Marker.DELETE, Marker.DELETEALL)
-            or point == (0.0, 0.0)
+            or self._invalid_position(point)
         ):
             self._ball = None
         else:
@@ -149,9 +149,12 @@ class PathPlanningNode(Node):
         self._avoid_ball = bool(message.data)
         self._dirty = True
 
-    def _invalid_pose(self, point: Point) -> bool:
-        """Apply the existing ROBIT zero-position sentinel policy."""
-        return self.config.zero_pose_is_invalid and point == (0.0, 0.0)
+    def _invalid_position(self, point: Point) -> bool:
+        """Apply the configured zero-position policy to every input."""
+        return (
+            self.config.zero_position_is_invalid
+            and point == (0.0, 0.0)
+        )
 
     def _on_timer(self) -> None:
         """Replan on changed input and continuously publish the latest state."""

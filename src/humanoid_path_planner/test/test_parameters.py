@@ -25,7 +25,7 @@ def test_load_parameters_uses_yaml_as_only_source():
     try:
         parameters = load_parameters(node)
         assert parameters.frame_id == 'map'
-        assert parameters.zero_pose_is_invalid is False
+        assert parameters.zero_position_is_invalid is False
         assert parameters.field.length == 9.0
         assert parameters.field.width == 6.0
         assert parameters.field.line_width == 0.05

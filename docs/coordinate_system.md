@@ -54,7 +54,10 @@ before publishing `geometry_msgs/Twist`:
 
 ## Important Settings
 
-- Keep zero_pose_is_invalid set to false because the field center is (0, 0).
+- Set adapter `zero_pixel_is_invalid` to false when source pixel `(0, 0)` is a
+  valid position. It converts to map `(-5.5, 4.0)` with the default field size.
+- Keep `zero_position_is_invalid` set to false because the field center is
+  `(0, 0)` and the policy applies to every planner input position.
 - Adapter field dimensions define the converted coordinate range.
 - Planner `field.length` is the single field-length value used for the RViz boundary and goal-line positions.
 - Goal obstacles are centered at `±(field.length / 2 + goal_obstacle.goal_line_offset)` on the X axis.
