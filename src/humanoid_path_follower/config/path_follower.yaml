@@ -11,9 +11,9 @@ path_follower:
     controller:
       carrot_index: 1              # 추종할 경로 waypoint 인덱스
       min_vel_x: -0.20             # 최소 전후진 속도 (m/s)
-      max_vel_x: 0.30              # 최대 전후진 속도 (m/s)
-      min_vel_y: -0.15             # 최소 측면 속도 (m/s)
-      max_vel_y: 0.15              # 최대 측면 속도 (m/s)
+      max_vel_x: 0.90              # 최대 전후진 속도 (m/s)
+      min_vel_y: -0.35             # 최소 측면 속도 (m/s)
+      max_vel_y: 0.35              # 최대 측면 속도 (m/s)
       min_vel_theta: -0.80         # 최소 회전 속도 (rad/s)
       max_vel_theta: 0.80          # 최대 회전 속도 (rad/s)
 
