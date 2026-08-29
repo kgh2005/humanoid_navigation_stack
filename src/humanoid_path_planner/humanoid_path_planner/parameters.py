@@ -71,7 +71,7 @@ class PlanningParameters:
 
     frame_id: str
     replan_hz: float
-    zero_pose_is_invalid: bool
+    zero_position_is_invalid: bool
     critical_cost_multiplier: float
     path_resolution: float
     show_visibility_graph: bool
@@ -106,7 +106,7 @@ def load_parameters(node: 'Node') -> PlanningParameters:
     parameters = PlanningParameters(
         frame_id=str(value('frame_id')),
         replan_hz=float(value('replan_hz')),
-        zero_pose_is_invalid=bool(value('zero_pose_is_invalid')),
+        zero_position_is_invalid=bool(value('zero_position_is_invalid')),
         critical_cost_multiplier=float(
             value('search.critical_cost_multiplier')
         ),

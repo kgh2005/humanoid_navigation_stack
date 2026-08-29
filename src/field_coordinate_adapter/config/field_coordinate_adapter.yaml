@@ -2,6 +2,7 @@ field_coordinate_adapter:
   ros__parameters:
     hz: 30.0
     output_frame_id: map
+    zero_pixel_is_invalid: true  # 원본 픽셀 (0, 0)을 유효하지 않게 처리할지 여부
 
     field:
       width_px: 1100.0

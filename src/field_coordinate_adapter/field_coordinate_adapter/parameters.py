@@ -9,6 +9,7 @@ class AdapterParameters:
 
     hz: float
     output_frame_id: str
+    zero_pixel_is_invalid: bool
     field_width_px: float
     field_height_px: float
     field_width_m: float
@@ -27,6 +28,7 @@ def load_parameters(node) -> AdapterParameters:
     """Declare, read, validate, and return adapter parameters."""
     node.declare_parameter('hz', 30.0)
     node.declare_parameter('output_frame_id', 'map')
+    node.declare_parameter('zero_pixel_is_invalid', False)
 
     node.declare_parameter('field.width_px', 1100.0)
     node.declare_parameter('field.height_px', 800.0)
@@ -49,6 +51,9 @@ def load_parameters(node) -> AdapterParameters:
     parameters = AdapterParameters(
         hz=float(node.get_parameter('hz').value),
         output_frame_id=str(node.get_parameter('output_frame_id').value),
+        zero_pixel_is_invalid=bool(
+            node.get_parameter('zero_pixel_is_invalid').value
+        ),
         field_width_px=float(node.get_parameter('field.width_px').value),
         field_height_px=float(node.get_parameter('field.height_px').value),
         field_width_m=float(node.get_parameter('field.width_m').value),

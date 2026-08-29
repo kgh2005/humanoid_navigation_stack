@@ -8,8 +8,9 @@ from humanoid_path_planner.ros2_adapter.path_planning_node import (
     _field_boundary_marker,
     PathPlanningNode,
 )
+import pytest
 from rclpy.clock import Clock
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, MarkerArray
 
 
 def field_parameters() -> FieldParameters:
@@ -82,3 +83,38 @@ def test_debug_publication_keeps_boundary_without_plan():
     assert len(message.markers) == 2
     assert message.markers[0].action == Marker.DELETEALL
     assert message.markers[1].ns == 'field_boundary'
+
+
+@pytest.mark.parametrize(
+    ('zero_position_is_invalid', 'position_is_present'),
+    ((False, True), (True, False)),
+)
+def test_zero_position_policy_applies_to_every_input(
+    zero_position_is_invalid,
+    position_is_present,
+):
+    """Robot, target, opponent, and ball must share one zero policy."""
+    node = SimpleNamespace(
+        config=SimpleNamespace(
+            zero_position_is_invalid=zero_position_is_invalid,
+            obstacle=SimpleNamespace(opponent_radius_fallback=0.075),
+            ball=SimpleNamespace(radius=0.05),
+        ),
+        _dirty=False,
+    )
+    node._invalid_position = lambda point: (
+        PathPlanningNode._invalid_position(node, point)
+    )
+    marker = Marker()
+    marker.action = Marker.ADD
+    marker.pose.orientation.w = 1.0
+
+    PathPlanningNode._on_robot(node, marker)
+    PathPlanningNode._on_target(node, marker)
+    PathPlanningNode._on_obstacles(node, MarkerArray(markers=[marker]))
+    PathPlanningNode._on_ball(node, marker)
+
+    assert (node._robot is not None) is position_is_present
+    assert (node._target is not None) is position_is_present
+    assert bool(node._opponents) is position_is_present
+    assert (node._ball is not None) is position_is_present

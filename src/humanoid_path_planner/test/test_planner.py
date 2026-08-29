@@ -22,7 +22,7 @@ def planner_parameters() -> PlanningParameters:
     return PlanningParameters(
         frame_id='map',
         replan_hz=10.0,
-        zero_pose_is_invalid=True,
+        zero_position_is_invalid=True,
         critical_cost_multiplier=10.0,
         path_resolution=0.1,
         show_visibility_graph=False,
