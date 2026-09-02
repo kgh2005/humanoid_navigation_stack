@@ -17,7 +17,7 @@ path_planning:
       robot_radius: 0.20              # 경로 계획에 사용할 로봇 반지름 (m)
       opponent_radius_fallback: 0.075 # 상대 로봇 크기가 없을 때 사용할 반지름 (m)
       margin: 0.10                    # 장애물 주변 기본 안전 여유 거리 (m)
-      near_distance: 1.0              # 로봇 근처 장애물로 판단하는 거리 (m)
+      near_distance: 0.0              # 로봇 근처 장애물로 판단하는 거리 (m)
       near_extra_margin: 0.20         # 근처 장애물에 추가할 안전 여유 거리 (m)
       merge_gap: 0.02                 # 가까운 장애물을 하나로 합칠 최대 간격 (m)
       polygon_vertices: 12            # 원형 장애물을 근사할 다각형 꼭짓점 수
