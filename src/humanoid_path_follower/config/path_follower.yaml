@@ -14,11 +14,11 @@ path_follower:
       max_vel_x: 0.90              # 최대 전후진 속도 (m/s)
       min_vel_y: -0.35             # 최소 측면 속도 (m/s)
       max_vel_y: 0.35              # 최대 측면 속도 (m/s)
-      min_vel_theta: -0.80         # 최소 회전 속도 (rad/s)
-      max_vel_theta: 0.80          # 최대 회전 속도 (rad/s)
+      min_vel_theta: -1.00         # 최소 회전 속도 (rad/s, AI Sapiens 정책 범위)
+      max_vel_theta: 1.00          # 최대 회전 속도 (rad/s, AI Sapiens 정책 범위)
 
       translation_gain: 1.5        # 남은 경로 길이에 대한 이동 P gain
-      rotation_kp: 2.0             # 각도 오차에 대한 회전 P gain
+      rotation_kp: 3.0             # 제자리 회전 응답을 높인 각도 오차 P gain
 
       orient_to_goal_distance: 0.3 # 목표 yaw 정렬을 시작할 거리 (m)
 
