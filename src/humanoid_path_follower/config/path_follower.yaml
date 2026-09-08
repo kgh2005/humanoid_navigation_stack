@@ -9,7 +9,7 @@ path_follower:
       carrot: /debug/carrot
 
     controller:
-      carrot_index: 1              # 추종할 경로 waypoint 인덱스
+      carrot_index: 1              # 최근접 waypoint에서 전진할 인덱스 간격 (최소 1)
       min_vel_x: -0.20             # 최소 전후진 속도 (m/s)
       max_vel_x: 0.90              # 최대 전후진 속도 (m/s)
       min_vel_y: -0.35             # 최소 측면 속도 (m/s)
@@ -17,12 +17,12 @@ path_follower:
       min_vel_theta: -1.00         # 최소 회전 속도 (rad/s, AI Sapiens 정책 범위)
       max_vel_theta: 1.00          # 최대 회전 속도 (rad/s, AI Sapiens 정책 범위)
 
-      translation_gain: 1.5        # 남은 경로 길이에 대한 이동 P gain
+      translation_gain: 0.69       # 남은 경로 길이에 대한 이동 P gain
       rotation_kp: 3.0             # 제자리 회전 응답을 높인 각도 오차 P gain
 
-      orient_to_goal_distance: 0.3 # 목표 yaw 정렬을 시작할 거리 (m)
+      orient_to_goal_distance: 0.65 # 목표 yaw 정렬을 시작할 거리 (m)
 
-      position_tolerance: 0.05     # 목표 위치 허용 오차 (m)
+      position_tolerance: 0.11     # 목표 위치 허용 오차 (m)
       orientation_tolerance: 0.087 # 목표 방향 허용 오차 (rad, 약 5도)
 
       smoothing_tau: 0.04          # 지수 평활화 시정수 (s)

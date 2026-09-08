@@ -170,21 +170,15 @@ class PathPlanningNode(Node):
         if self._robot is None or self._target is None:
             self._last_result = None
             return
-
-        result = self.planner.plan(
+        self._last_result = self.planner.plan(
             self._robot,
             self._target,
             self._opponents,
             ball=self._ball,
             avoid_ball=self._avoid_ball,
         )
-
-        if result.successful:
-            self._last_result = result
-        else:
-            self.get_logger().warning(
-                'No collision-free path found; keeping previous path'
-            )
+        if not self._last_result.successful:
+            self.get_logger().warning('No collision-free path found')
 
     def _to_path(self, result: PlanResult | None) -> Path:
         """Convert a coordinate path to ``nav_msgs/Path``."""

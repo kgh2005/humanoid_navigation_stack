@@ -29,6 +29,21 @@ class _Node:
     vertex_id: int = -1
 
 
+def direct_path_is_clear(
+    start: Point,
+    goal: Point,
+    geometry: ObstacleGeometry,
+) -> bool:
+    """Return whether the straight segment already is the shortest path."""
+    for polygon in geometry.margin:
+        if segment_blocked_by_polygon(start, goal, polygon):
+            return False
+    for polygon in geometry.critical:
+        if segment_blocked_by_polygon(start, goal, polygon):
+            return False
+    return True
+
+
 def shortest_path(
     start: Point,
     goal: Point,

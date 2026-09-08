@@ -98,32 +98,21 @@ class PathFollowerNode(Node):
             self._stop()
 
     def _on_path(self, message: Path) -> None:
-        """Update the active path while preserving the previous valid path."""
+        """Replace the active path and safely reset controller history."""
         try:
             path = tuple(path_to_poses(message))
         except ValueError as error:
             self.get_logger().warning(
                 f'Ignoring path with invalid orientation: {error}'
             )
-            return
-
-        # Empty path는 무시하고 기존 경로를 유지
-        if not path:
-            return
-
-        # 이전 경로와 같은 경로인지 확인
-        same_path = path == self._path
+            path = ()
 
         self._path = path
         self._path_frame_id = message.header.frame_id
         self._path_received_at = self._now_seconds()
-
-        # 실제로 경로가 바뀐 경우에만 controller history reset
-        if not same_path:
-            self.controller.reset()
-            self._last_control_at = None
-
-        if not self._check_frames():
+        self.controller.reset()
+        self._last_control_at = None
+        if not self._path or not self._check_frames():
             self._publish_zero()
 
     def _on_timer(self) -> None:
@@ -155,6 +144,12 @@ class PathFollowerNode(Node):
                     now.to_msg(),
                 )
             )
+            # self.get_logger().info(
+            #     f'cmd=({result.command.vx:.3f}, '
+            #     f'{result.command.vy:.3f}, '
+            #     f'{result.command.wz:.3f}) '
+            #     f'reached={result.goal_reached}'
+            # )
 
     def _inputs_ready(self, now_seconds: float) -> bool:
         """Return whether both inputs are present, compatible, and fresh."""
