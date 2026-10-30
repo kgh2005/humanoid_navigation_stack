@@ -69,6 +69,11 @@ class FieldCoordinateAdapterNode(Node):
             self.parameters.topic_output_target,
             10,
         )
+        self._goal_pub = self.create_publisher(
+            Marker,
+            self.parameters.topic_goal,
+            10,
+        )
 
         self._timer = self.create_timer(
             1.0 / self.parameters.hz,
@@ -102,7 +107,9 @@ class FieldCoordinateAdapterNode(Node):
             self._publish_robot(localization, self._latest_imu, stamp)
             self._publish_ball(localization, stamp)
             self._publish_obstacles(localization, stamp)
-        self._publish_target(target, stamp)
+        if target is not None:
+            self._publish_goal(target, stamp)
+            self._publish_target(target, stamp)
 
     def _publish_robot(self, localization, imu, stamp) -> None:
         """Publish the converted robot marker."""
@@ -248,6 +255,33 @@ class FieldCoordinateAdapterNode(Node):
         marker.color.b = 0.2
         marker.color.a = 1.0
         self._target_pub.publish(marker)
+
+    def _publish_goal(self, target, stamp) -> None:
+        """Publish the converted goal marker."""
+        marker = self._new_marker(stamp, 'goal', 0)
+        goal_x = float(target.goalx)
+        goal_y = float(target.goaly)
+
+        if self._invalid_pixel_position(goal_x, goal_y):
+            marker.action = Marker.DELETE
+            self._goal_pub.publish(marker)
+            return
+
+        x, y = self._converter.to_field(goal_x, goal_y)
+        marker.type = Marker.SPHERE
+        marker.action = Marker.ADD
+        marker.pose.position.x = x
+        marker.pose.position.y = y
+        marker.pose.position.z = 0.05
+        marker.pose.orientation.w = 1.0
+        marker.scale.x = 0.10
+        marker.scale.y = 0.10
+        marker.scale.z = 0.10
+        marker.color.r = 0.0
+        marker.color.g = 1.0
+        marker.color.b = 1.0
+        marker.color.a = 1.0
+        self._goal_pub.publish(marker)
 
     def _invalid_pixel_position(self, x: float, y: float) -> bool:
         """Apply the configured zero-pixel policy to every position."""

@@ -22,6 +22,7 @@ class AdapterParameters:
     topic_obstacles: str
     topic_ball: str
     topic_output_target: str
+    topic_goal: str
 
 
 def load_parameters(node) -> AdapterParameters:
@@ -47,6 +48,7 @@ def load_parameters(node) -> AdapterParameters:
     )
     node.declare_parameter('topics.output.ball', '/adapter/ball_marker')
     node.declare_parameter('topics.output.target', '/adapter/target_marker')
+    node.declare_parameter('topics.output.goal', '/adapter/goal_marker')
 
     parameters = AdapterParameters(
         hz=float(node.get_parameter('hz').value),
@@ -71,6 +73,9 @@ def load_parameters(node) -> AdapterParameters:
         topic_ball=str(node.get_parameter('topics.output.ball').value),
         topic_output_target=str(
             node.get_parameter('topics.output.target').value
+        ),
+        topic_goal=str(
+            node.get_parameter('topics.output.goal').value
         )
     )
 
